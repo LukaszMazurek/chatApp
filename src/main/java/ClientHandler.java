@@ -18,7 +18,6 @@ public class ClientHandler implements Runnable{
         this.clientUsername = bufferedReader.readLine();
         clientHandlers.add(this);
         broadcastMessage("SERVER: " + clientUsername + " has entered");
-        closeEverything(socket, bufferedReader, bufferedWriter);
     }
 
     @Override

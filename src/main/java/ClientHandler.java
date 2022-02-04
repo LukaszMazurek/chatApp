@@ -10,31 +10,72 @@ public class ClientHandler implements Runnable{
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String clientUsername;
+    private AuthorizationHandler authorizationHandler;
+    private boolean login;
 
-    public ClientHandler(Socket socket) throws IOException {
+    public ClientHandler(Socket socket, AuthorizationHandler authorizationHandler) throws IOException {
         this.socket = socket;
         this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.clientUsername = bufferedReader.readLine();
-        clientHandlers.add(this);
-        broadcastMessage("SERVER: " + clientUsername + " has entered");
+        this.authorizationHandler = authorizationHandler;
+        this.login = false;
+        // clientHandlers.add(this);
+        // broadcastMessage("SERVER: " + clientUsername + " has entered");
     }
 
     @Override
     public void run() {
-        String messageFromClient;
 
         while (socket.isConnected()){
-
             try {
-                messageFromClient = bufferedReader.readLine();
-                broadcastMessage(messageFromClient);
+                String messageFromClient = bufferedReader.readLine();
+                handleMessage(messageFromClient);
             } catch (IOException e) {
                 e.printStackTrace();
                 closeEverything(socket, bufferedReader, bufferedWriter);
             }
         }
     }
+
+    public void handleMessage(String messageFromClient) throws IOException {
+        if(messageFromClient.equals("SIGNUP")){
+            String username = bufferedReader.readLine();
+            String password = bufferedReader.readLine();
+            if(authorizationHandler.handleRegistration(username, password)){
+                bufferedWriter.write("ACCOUNT CREATED");
+                clientUsername = username;
+                clientHandlers.add(this);
+                login = true;
+            }
+            else {
+                bufferedWriter.write("LOGIN TAKEN");
+            }
+        }
+        else if(messageFromClient.equals("SIGNIN")){
+            String username = bufferedReader.readLine();
+            String password = bufferedReader.readLine();
+            if(authorizationHandler.handleLogin(username, password)){
+                bufferedWriter.write("LOGIN");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+                clientUsername = username;
+                clientHandlers.add(this);
+                login = true;
+            }
+            else {
+                bufferedWriter.write("WRONG DATA");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            }
+        }
+        else {
+            if (login) {
+                broadcastMessage(messageFromClient);
+            }
+        }
+
+    }
+
 
     public void broadcastMessage(String messageToSend) throws IOException {
         for(ClientHandler clientHandler : clientHandlers){

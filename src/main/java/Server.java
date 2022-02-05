@@ -16,7 +16,7 @@ public class Server {
     public void startServer() throws IOException {
         while (!serverSocket.isClosed()){
             Socket socket = serverSocket.accept();
-            System.out.println("New client connected");
+            System.out.println("New client connected: " + socket.toString());
             ClientHandler clientHandler = new ClientHandler(socket, authorizationHandler);
             Thread thread = new Thread(clientHandler);
             thread.start();

@@ -17,44 +17,48 @@ public class Client {
         this.msgFromChat = "NAN";
     }
 
-    public void sendMessage() {
-        try {
-            // bufferedWriter.write(username);
-            // bufferedWriter.newLine();
-            // bufferedWriter.flush();
+    public void sendMessage(String msgToSend) throws IOException {
+        bufferedWriter.write(msgToSend);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+    }
 
+    public void authorization(Scanner scanner, String command) throws IOException {
+        System.out.println("PUT USERNAME");
+        username = scanner.nextLine();
+        System.out.println("PUT PASSWORD");
+        String password = scanner.nextLine();
+        sendMessage(command);
+        sendMessage(username);
+        sendMessage(password);
+    }
+
+    public void clientProtocol() {
+        try {
 
             Scanner scanner = new Scanner(System.in);
 
             while (!msgFromChat.equals("ACCOUNT CREATED") && !msgFromChat.equals("LOGIN")){
+
                 System.out.println("SIGNIN 1");
                 System.out.println("SIGNUP 2");
                 String message = scanner.nextLine();
 
                 if(message.equals("1")){
-                    System.out.println("PUT USERNAME");
-                    username = scanner.nextLine();
-                    System.out.println("PUT PASSWORD");
-                    String password = scanner.nextLine();
-                    bufferedWriter.write("SIGNIN");
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                    bufferedWriter.write(username);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                    bufferedWriter.write(password);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
+                    authorization(scanner, "SIGNIN");
                 }
+                else if(message.equals("2")){
+                    authorization(scanner, "SIGNUP");
+                }
+
+                Thread.sleep(100);
             }
 
             while (socket.isConnected()){
                 String message = scanner.nextLine();
-                bufferedWriter.write(username + ": " + message);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                sendMessage(username + ": " + message);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -100,6 +104,6 @@ public class Client {
         Socket socket = new Socket("localhost", 5000);
         Client client = new Client(socket);
         client.listenForMessage();
-        client.sendMessage();
+        client.clientProtocol();
     }
 }

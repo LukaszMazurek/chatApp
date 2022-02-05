@@ -19,8 +19,6 @@ public class ClientHandler implements Runnable{
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.authorizationHandler = authorizationHandler;
         this.login = false;
-        // clientHandlers.add(this);
-        // broadcastMessage("SERVER: " + clientUsername + " has entered");
     }
 
     @Override
@@ -29,7 +27,7 @@ public class ClientHandler implements Runnable{
         while (socket.isConnected()){
             try {
                 String messageFromClient = bufferedReader.readLine();
-                handleMessage(messageFromClient);
+                serverProtocol(messageFromClient);
             } catch (IOException e) {
                 e.printStackTrace();
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -37,35 +35,31 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void handleMessage(String messageFromClient) throws IOException {
+    public void serverProtocol(String messageFromClient) throws IOException {
         if(messageFromClient.equals("SIGNUP")){
             String username = bufferedReader.readLine();
             String password = bufferedReader.readLine();
             if(authorizationHandler.handleRegistration(username, password)){
-                bufferedWriter.write("ACCOUNT CREATED");
+                privateMessage("ACCOUNT CREATED");
                 clientUsername = username;
                 clientHandlers.add(this);
                 login = true;
             }
             else {
-                bufferedWriter.write("LOGIN TAKEN");
+                privateMessage("LOGIN TAKEN");
             }
         }
         else if(messageFromClient.equals("SIGNIN")){
             String username = bufferedReader.readLine();
             String password = bufferedReader.readLine();
             if(authorizationHandler.handleLogin(username, password)){
-                bufferedWriter.write("LOGIN");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                privateMessage("LOGIN");
                 clientUsername = username;
                 clientHandlers.add(this);
                 login = true;
             }
             else {
-                bufferedWriter.write("WRONG DATA");
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                privateMessage("WRONG DATA");
             }
         }
         else {
@@ -76,6 +70,11 @@ public class ClientHandler implements Runnable{
 
     }
 
+    public void privateMessage(String messageToSend) throws IOException {
+        bufferedWriter.write(messageToSend);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+    }
 
     public void broadcastMessage(String messageToSend) throws IOException {
         for(ClientHandler clientHandler : clientHandlers){

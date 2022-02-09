@@ -27,8 +27,8 @@ public class AuthorizationHandler {
     }
 
     public Boolean handleLogin(String login, String password){
-        if(users.get(login).equals(password)){
-            return true;
+        if(users.containsKey(login)){
+            return users.get(login).equals(password);
         }
         return false;
     }

@@ -1,3 +1,6 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -98,12 +101,19 @@ public class Client {
         }
     }
 
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
         Scanner scanner = new Scanner(System.in);
-        Socket socket = new Socket("localhost", 5000);
-        Client client = new Client(socket);
-        client.listenForMessage();
-        client.clientProtocol();
+        Socket socket = null;
+        try {
+            socket = new Socket("localhost", 5000);
+            Client client = new Client(socket);
+            client.listenForMessage();
+            client.clientProtocol();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ClientGui gui = new ClientGui();
+
     }
 }

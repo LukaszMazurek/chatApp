@@ -36,7 +36,7 @@ public class ClientHandler implements Runnable{
     }
 
     public void serverProtocol(String messageFromClient) throws IOException {
-        if(messageFromClient.equals("SIGNUP")){
+        if(messageFromClient.equals("REGISTER")){
             String username = bufferedReader.readLine();
             String password = bufferedReader.readLine();
             if(authorizationHandler.handleRegistration(username, password)){
@@ -49,7 +49,7 @@ public class ClientHandler implements Runnable{
                 privateMessage("LOGIN TAKEN");
             }
         }
-        else if(messageFromClient.equals("SIGNIN")){
+        else if(messageFromClient.equals("LOGIN")){
             String username = bufferedReader.readLine();
             String password = bufferedReader.readLine();
             if(authorizationHandler.handleLogin(username, password)){

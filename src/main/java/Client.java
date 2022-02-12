@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client {
 
@@ -26,45 +25,37 @@ public class Client {
         bufferedWriter.flush();
     }
 
-    public void authorization(Scanner scanner, String command) throws IOException {
-        System.out.println("PUT USERNAME");
-        username = scanner.nextLine();
-        System.out.println("PUT PASSWORD");
-        String password = scanner.nextLine();
-        sendMessage(command);
-        sendMessage(username);
-        sendMessage(password);
-    }
+    public String clientProtocol(String command, String[] params) {
 
-    public String clientProtocol(String command, String[] params) throws IOException {
-
-
-        if(command.equals("LOGIN")){
-
-            try {
+        try {
+            if (command.equals("LOGIN")) {
                 sendMessage(command);
                 username = params[0];
                 sendMessage(params[0]);
                 sendMessage(params[1]);
                 Thread.sleep(100);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            if(msgFromClient.equals(command)){
-                return "LOGIN";
-            }
-        }
-        else if(command.equals("MESSAGE")){
-            try {
+                if (msgFromClient.equals(command)) {
+                    return "LOGIN";
+                }
+            } else if (command.equals("MESSAGE")) {
                 sendMessage(command);
                 sendMessage(username + " : " + params[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else if (command.equals("REGISTER")) {
+                sendMessage(command);
+                username = params[0];
+                sendMessage(params[0]);
+                sendMessage(params[1]);
+                Thread.sleep(100);
+                if (msgFromClient.equals(command)) {
+                    return "REGISTER";
+                }
+            } else {
+                String[] serverParams = {msgFromClient};
+                mediator.notify("RECEIVED MESSAGE", serverParams);
             }
-        }else {
-            String[] serverParams = {msgFromClient};
-            mediator.notify("RECEIVED MESSAGE", serverParams);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
         return "NAN";
     }
@@ -105,21 +96,4 @@ public class Client {
             e.printStackTrace();
         }
     }
-
-    /*
-    public static void main(String[] args)  {
-        Scanner scanner = new Scanner(System.in);
-        Socket socket = null;
-        try {
-            socket = new Socket("localhost", 5000);
-            Client client = new Client(socket);
-            client.listenForMessage();
-            client.clientProtocol();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ClientGui gui = new ClientGui();
-
-    }*/
 }

@@ -96,7 +96,8 @@ public class ClientGui extends JFrame implements ActionListener {
             String[] params = {userTextField.getText(), passwordField.getText()};
             mediator.notify("LOGIN", params);
         }else if(e.getActionCommand().equals("REGISTER")){
-
+            String[] params = {userTextField.getText(), passwordField.getText()};
+            mediator.notify("REGISTER", params);
         }else if(e.getActionCommand().equals("SEND")){
             String[] params = {msgToSend.getText()};
             mediator.notify("MESSAGE", params);

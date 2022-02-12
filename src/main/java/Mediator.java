@@ -26,23 +26,26 @@ public class Mediator {
     }
 
     public void notify(String command, String[] params) {
-        try {
-            if (command.equals("LOGIN")) {
-                if (client.clientProtocol("LOGIN", params).equals("LOGIN")) {
-                    gui.clearWindow();
-                    gui.setChatLocationAndSize();
-                    gui.addComponentsToChat();
-                    gui.refresh();
-                }
-            } else if (command.equals("MESSAGE")) {
-                client.clientProtocol(command, params);
-            } else if (command.equals("RECEIVED MESSAGE")) {
-                String receivedMsg = params[0];
-                gui.setReceivedMsg(receivedMsg);
+        if (command.equals("LOGIN")) {
+            if (client.clientProtocol("LOGIN", params).equals("LOGIN")) {
+                gui.clearWindow();
+                gui.setChatLocationAndSize();
+                gui.addComponentsToChat();
                 gui.refresh();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else if (command.equals("MESSAGE")) {
+            client.clientProtocol(command, params);
+        } else if (command.equals("RECEIVED MESSAGE")) {
+            String receivedMsg = params[0];
+            gui.setReceivedMsg(receivedMsg);
+            gui.refresh();
+        }else if(command.equals("REGISTER")){
+            if(client.clientProtocol("REGISTER", params).equals("REGISTER")){
+                gui.clearWindow();
+                gui.setChatLocationAndSize();
+                gui.addComponentsToChat();
+                gui.refresh();
+            }
         }
     }
 

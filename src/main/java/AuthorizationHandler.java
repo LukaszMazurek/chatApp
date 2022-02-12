@@ -1,4 +1,5 @@
 import javax.print.attribute.standard.OutputDeviceAssigned;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,11 +11,8 @@ public class AuthorizationHandler {
     private FileHandler fileHandler;
 
     public AuthorizationHandler(){
-        users = new HashMap<>();
-        users.put("bob1", "bob1");
-        users.put("bob2", "bob2");
-        users.put("bob3", "bob3");
         fileHandler = new FileHandler();
+        users = fileHandler.readFromFile();
     }
 
     public Boolean handleRegistration(String login, String password){
@@ -23,6 +21,7 @@ public class AuthorizationHandler {
             return false;
         }
 
+        fileHandler.writeToFile(login, password);
         users.put(login, password);
         return true;
     }

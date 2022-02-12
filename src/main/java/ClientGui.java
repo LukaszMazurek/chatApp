@@ -69,9 +69,9 @@ public class ClientGui extends JFrame implements ActionListener {
     public void setChatLocationAndSize(){
         msgToSend.setBounds(120, 50, 200, 50);
         msgToSendLabel.setBounds(20, 50, 80, 50);
-        msgReceived.setBounds(120, 150, 200, 50);
+        msgReceived.setBounds(120, 150, 200, 100);
         msgReceivedLabel.setBounds(20, 150, 80, 50);
-        sendButton.setBounds(250, 250, 80, 30);
+        sendButton.setBounds(220, 270, 80, 30);
     }
 
     public void addComponentsToChat(){

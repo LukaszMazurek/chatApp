@@ -43,6 +43,7 @@ public class Client {
 
             try {
                 sendMessage(command);
+                username = params[0];
                 sendMessage(params[0]);
                 sendMessage(params[1]);
                 Thread.sleep(100);
@@ -57,7 +58,7 @@ public class Client {
         else if(command.equals("MESSAGE")){
             try {
                 sendMessage(command);
-                sendMessage(params[0]);
+                sendMessage(username + " : " + params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -65,38 +66,7 @@ public class Client {
             String[] serverParams = {msgFromClient};
             mediator.notify("RECEIVED MESSAGE", serverParams);
         }
-
-
-            /*
-            try {
-
-                Scanner scanner = new Scanner(System.in);
-
-                while (!msgFromChat.equals("ACCOUNT CREATED") && !msgFromChat.equals("LOGIN")) {
-
-                    System.out.println("SIGNIN 1");
-                    System.out.println("SIGNUP 2");
-                    String message = scanner.nextLine();
-
-                    if (message.equals("1")) {
-                        authorization(scanner, "SIGNIN");
-                    } else if (message.equals("2")) {
-                        authorization(scanner, "SIGNUP");
-                    }
-
-                    Thread.sleep(100);
-                }
-
-                while (socket.isConnected()) {
-                    String message = scanner.nextLine();
-                    sendMessage(username + ": " + message);
-                }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-                closeEverything(socket, bufferedReader, bufferedWriter);
-            }
-            */
-            return "NAN";
+        return "NAN";
     }
 
 

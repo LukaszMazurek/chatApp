@@ -60,7 +60,6 @@ public class ClientHandler implements Runnable{
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 closeEverything(socket, bufferedReader, bufferedWriter);
             }
         }
@@ -84,7 +83,6 @@ public class ClientHandler implements Runnable{
 
     public void removeClientHandler() throws IOException {
         clientHandlers.remove(this);
-        broadcastMessage("SERVER " + clientUsername + " left");
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {

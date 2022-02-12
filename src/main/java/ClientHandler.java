@@ -26,48 +26,44 @@ public class ClientHandler implements Runnable{
 
         while (socket.isConnected()){
             try {
-                String messageFromClient = bufferedReader.readLine();
-                serverProtocol(messageFromClient);
+                String command = bufferedReader.readLine();
+                if(command.equals("REGISTER")){
+                    String username = bufferedReader.readLine();
+                    String password = bufferedReader.readLine();
+                    if(authorizationHandler.handleRegistration(username, password)){
+                        privateMessage("ACCOUNT CREATED");
+                        clientUsername = username;
+                        clientHandlers.add(this);
+                        login = true;
+                    }
+                    else {
+                        privateMessage("LOGIN TAKEN");
+                    }
+                }
+                else if(command.equals("LOGIN")){
+                    String username = bufferedReader.readLine();
+                    String password = bufferedReader.readLine();
+                    if(authorizationHandler.handleLogin(username, password)){
+                        privateMessage("LOGIN");
+                        clientUsername = username;
+                        clientHandlers.add(this);
+                        login = true;
+                    }
+                    else {
+                        privateMessage("WRONG DATA");
+                    }
+                }
+                else if (command.equals("MESSAGE")){
+                    if (login) {
+                        String msg = bufferedReader.readLine();
+                        broadcastMessage(msg);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 closeEverything(socket, bufferedReader, bufferedWriter);
             }
         }
-    }
-
-    public void serverProtocol(String messageFromClient) throws IOException {
-        if(messageFromClient.equals("REGISTER")){
-            String username = bufferedReader.readLine();
-            String password = bufferedReader.readLine();
-            if(authorizationHandler.handleRegistration(username, password)){
-                privateMessage("ACCOUNT CREATED");
-                clientUsername = username;
-                clientHandlers.add(this);
-                login = true;
-            }
-            else {
-                privateMessage("LOGIN TAKEN");
-            }
-        }
-        else if(messageFromClient.equals("LOGIN")){
-            String username = bufferedReader.readLine();
-            String password = bufferedReader.readLine();
-            if(authorizationHandler.handleLogin(username, password)){
-                privateMessage("LOGIN");
-                clientUsername = username;
-                clientHandlers.add(this);
-                login = true;
-            }
-            else {
-                privateMessage("WRONG DATA");
-            }
-        }
-        else {
-            if (login) {
-                broadcastMessage(messageFromClient);
-            }
-        }
-
     }
 
     public void privateMessage(String messageToSend) throws IOException {

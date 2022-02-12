@@ -1,6 +1,3 @@
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -11,7 +8,7 @@ public class Client {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String msgFromChat;
+    private String msgFromClient;
     private String username;
 
 
@@ -19,7 +16,7 @@ public class Client {
         this.socket = socket;
         this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.msgFromChat = "NAN";
+        this.msgFromClient = "NAN";
         this.mediator = mediator;
     }
 
@@ -39,7 +36,7 @@ public class Client {
         sendMessage(password);
     }
 
-    public String clientProtocol(String command,String[] params) {
+    public String clientProtocol(String command, String[] params) throws IOException {
 
 
         if(command.equals("LOGIN")){
@@ -53,10 +50,22 @@ public class Client {
                 e.printStackTrace();
             }
 
-            if(msgFromChat.equals(command)){
+            if(msgFromClient.equals(command)){
                 return "LOGIN";
             }
         }
+        else if(command.equals("MESSAGE")){
+            try {
+                sendMessage(command);
+                sendMessage(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            String[] serverParams = {msgFromClient};
+            mediator.notify("RECEIVED MESSAGE", serverParams);
+        }
+
 
             /*
             try {
@@ -99,8 +108,9 @@ public class Client {
 
                 while (socket.isConnected()){
                     try {
-                        msgFromChat = bufferedReader.readLine();
-                        System.out.println(msgFromChat);
+                        msgFromClient = bufferedReader.readLine();
+                        clientProtocol("", new String[]{});
+                        System.out.println(msgFromClient);
                     }catch (IOException e){
                         e.printStackTrace();
                         closeEverything(socket, bufferedReader, bufferedWriter);

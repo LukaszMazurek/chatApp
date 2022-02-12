@@ -26,15 +26,24 @@ public class Mediator {
     }
 
     public void notify(String command, String[] params) {
-        if (command.equals("LOGIN")) {
-            if(client.clientProtocol("LOGIN", params).equals("LOGIN")){
-                gui.clearWindow();
-                gui.setChatLocationAndSize();
-                gui.addComponentsToChat();
+        try {
+            if (command.equals("LOGIN")) {
+                if (client.clientProtocol("LOGIN", params).equals("LOGIN")) {
+                    gui.clearWindow();
+                    gui.setChatLocationAndSize();
+                    gui.addComponentsToChat();
+                    gui.refresh();
+                }
+            } else if (command.equals("MESSAGE")) {
+                client.clientProtocol(command, params);
+            } else if (command.equals("RECEIVED MESSAGE")) {
+                String receivedMsg = params[0];
+                gui.setReceivedMsg(receivedMsg);
                 gui.refresh();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
     }
 
 

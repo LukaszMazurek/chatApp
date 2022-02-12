@@ -9,10 +9,13 @@ public class ClientGui extends JFrame implements ActionListener {
     private Container container = getContentPane();
     private JLabel userLabel = new JLabel("USERNAME");
     private JLabel passwordLabel= new JLabel("PASSWORD");
+    private JLabel msgToSendLabel = new JLabel("message");
+    private JLabel msgReceivedLabel = new JLabel("received");
     private JTextField userTextField = new JTextField();
     private JTextField passwordField = new JTextField();
     private JButton loginButton = new JButton("LOGIN");
     private JButton resetButton = new JButton("REGISTER");
+    private JButton sendButton = new JButton("SEND");
     private JTextField msgToSend = new JTextField();
     private JTextField msgReceived = new JTextField();
 
@@ -50,11 +53,13 @@ public class ClientGui extends JFrame implements ActionListener {
         container.add(passwordField);
         container.add(loginButton);
         container.add(resetButton);
+
     }
 
     public void addActionEvent(){
         loginButton.addActionListener(this);
         resetButton.addActionListener(this);
+        sendButton.addActionListener(this);
     }
 
     public void clearWindow() {
@@ -62,13 +67,23 @@ public class ClientGui extends JFrame implements ActionListener {
     }
 
     public void setChatLocationAndSize(){
-        msgToSend.setBounds(100, 100, 200, 50);
-        msgReceived.setBounds(100, 200, 200, 50);
+        msgToSend.setBounds(120, 50, 200, 50);
+        msgToSendLabel.setBounds(20, 50, 80, 50);
+        msgReceived.setBounds(120, 150, 200, 50);
+        msgReceivedLabel.setBounds(20, 150, 80, 50);
+        sendButton.setBounds(250, 250, 80, 30);
     }
 
     public void addComponentsToChat(){
         container.add(msgToSend);
         container.add(msgReceived);
+        container.add(msgToSendLabel);
+        container.add(msgReceivedLabel);
+        container.add(sendButton);
+    }
+
+    public void setReceivedMsg(String msg){
+        msgReceived.setText(msg);
     }
 
     public void refresh(){
@@ -82,8 +97,9 @@ public class ClientGui extends JFrame implements ActionListener {
             mediator.notify("LOGIN", params);
         }else if(e.getActionCommand().equals("REGISTER")){
 
-        }else if(e.getActionCommand().equals("MESSAGE")){
-
+        }else if(e.getActionCommand().equals("SEND")){
+            String[] params = {msgToSend.getText()};
+            mediator.notify("MESSAGE", params);
         }
     }
 }

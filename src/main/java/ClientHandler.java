@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable{
                     String username = bufferedReader.readLine();
                     String password = bufferedReader.readLine();
                     if(authorizationHandler.handleRegistration(username, password)){
-                        privateMessage("ACCOUNT CREATED");
+                        privateMessage("REGISTER");
                         clientUsername = username;
                         clientHandlers.add(this);
                         login = true;

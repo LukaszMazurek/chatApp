@@ -5,16 +5,22 @@ import java.awt.event.ActionListener;
 
 public class ClientGui extends JFrame implements ActionListener {
 
-    private Container container=getContentPane();
-    private JLabel userLabel=new JLabel("USERNAME");
-    private JLabel passwordLabel=new JLabel("PASSWORD");
-    private JTextField userTextField=new JTextField();
-    private JPasswordField passwordField=new JPasswordField();
-    private JButton loginButton=new JButton("LOGIN");
-    private JButton resetButton=new JButton("REGISTER");
+    private Mediator mediator;
+    private Container container = getContentPane();
+    private JLabel userLabel = new JLabel("USERNAME");
+    private JLabel passwordLabel= new JLabel("PASSWORD");
+    private JLabel msgToSendLabel = new JLabel("message");
+    private JLabel msgReceivedLabel = new JLabel("received");
+    private JTextField userTextField = new JTextField();
+    private JTextField passwordField = new JTextField();
+    private JButton loginButton = new JButton("LOGIN");
+    private JButton resetButton = new JButton("REGISTER");
+    private JButton sendButton = new JButton("SEND");
+    private JTextField msgToSend = new JTextField();
+    private JTextField msgReceived = new JTextField();
 
-    public ClientGui(){
-
+    public ClientGui(Mediator mediator){
+        this.mediator = mediator;
         setTitle("Chat");
         setVisible(true);
         setBounds(10,10,350,350);
@@ -23,6 +29,7 @@ public class ClientGui extends JFrame implements ActionListener {
         setLayoutManager();
         setLocationAndSize();
         addComponentsToContainer();
+        addActionEvent();
     }
 
     public void setLayoutManager()
@@ -46,11 +53,53 @@ public class ClientGui extends JFrame implements ActionListener {
         container.add(passwordField);
         container.add(loginButton);
         container.add(resetButton);
+
     }
 
+    public void addActionEvent(){
+        loginButton.addActionListener(this);
+        resetButton.addActionListener(this);
+        sendButton.addActionListener(this);
+    }
+
+    public void clearWindow() {
+        container.removeAll();
+    }
+
+    public void setChatLocationAndSize(){
+        msgToSend.setBounds(120, 50, 200, 50);
+        msgToSendLabel.setBounds(20, 50, 80, 50);
+        msgReceived.setBounds(120, 150, 200, 100);
+        msgReceivedLabel.setBounds(20, 150, 80, 50);
+        sendButton.setBounds(220, 270, 80, 30);
+    }
+
+    public void addComponentsToChat(){
+        container.add(msgToSend);
+        container.add(msgReceived);
+        container.add(msgToSendLabel);
+        container.add(msgReceivedLabel);
+        container.add(sendButton);
+    }
+
+    public void setReceivedMsg(String msg){
+        msgReceived.setText(msg);
+    }
+
+    public void refresh(){
+        SwingUtilities.updateComponentTreeUI(this);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals("LOGIN")) {
+            String[] params = {userTextField.getText(), passwordField.getText()};
+            mediator.notify("LOGIN", params);
+        }else if(e.getActionCommand().equals("REGISTER")){
 
+        }else if(e.getActionCommand().equals("SEND")){
+            String[] params = {msgToSend.getText()};
+            mediator.notify("MESSAGE", params);
+        }
     }
 }

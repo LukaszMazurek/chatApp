@@ -13,6 +13,7 @@ public class AuthorizationHandler {
         users = new HashMap<>();
         users.put("bob1", "bob1");
         users.put("bob2", "bob2");
+        users.put("bob3", "bob3");
         fileHandler = new FileHandler();
     }
 

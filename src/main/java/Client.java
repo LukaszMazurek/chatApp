@@ -1,23 +1,23 @@
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
 
+    private Mediator mediator;
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String msgFromChat;
+    private String msgFromClient;
     private String username;
 
-    public Client(Socket socket) throws IOException {
+
+    public Client(Socket socket, Mediator mediator) throws IOException {
         this.socket = socket;
         this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.msgFromChat = "NAN";
+        this.msgFromClient = "NAN";
+        this.mediator = mediator;
     }
 
     public void sendMessage(String msgToSend) throws IOException {
@@ -36,36 +36,40 @@ public class Client {
         sendMessage(password);
     }
 
-    public void clientProtocol() {
-        try {
+    public String clientProtocol(String command, String[] params) throws IOException {
 
-            Scanner scanner = new Scanner(System.in);
 
-            while (!msgFromChat.equals("ACCOUNT CREATED") && !msgFromChat.equals("LOGIN")){
+        if(command.equals("LOGIN")){
 
-                System.out.println("SIGNIN 1");
-                System.out.println("SIGNUP 2");
-                String message = scanner.nextLine();
-
-                if(message.equals("1")){
-                    authorization(scanner, "SIGNIN");
-                }
-                else if(message.equals("2")){
-                    authorization(scanner, "SIGNUP");
-                }
-
+            try {
+                sendMessage(command);
+                username = params[0];
+                sendMessage(params[0]);
+                sendMessage(params[1]);
                 Thread.sleep(100);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
 
-            while (socket.isConnected()){
-                String message = scanner.nextLine();
-                sendMessage(username + ": " + message);
+            if(msgFromClient.equals(command)){
+                return "LOGIN";
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            closeEverything(socket, bufferedReader, bufferedWriter);
         }
+        else if(command.equals("MESSAGE")){
+            try {
+                sendMessage(command);
+                sendMessage(username + " : " + params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            String[] serverParams = {msgFromClient};
+            mediator.notify("RECEIVED MESSAGE", serverParams);
+        }
+        return "NAN";
     }
+
+
 
     public void listenForMessage(){
         new Thread(new Runnable() {
@@ -74,8 +78,9 @@ public class Client {
 
                 while (socket.isConnected()){
                     try {
-                        msgFromChat = bufferedReader.readLine();
-                        System.out.println(msgFromChat);
+                        msgFromClient = bufferedReader.readLine();
+                        clientProtocol("", new String[]{});
+                        System.out.println(msgFromClient);
                     }catch (IOException e){
                         e.printStackTrace();
                         closeEverything(socket, bufferedReader, bufferedWriter);
@@ -101,6 +106,7 @@ public class Client {
         }
     }
 
+    /*
     public static void main(String[] args)  {
         Scanner scanner = new Scanner(System.in);
         Socket socket = null;
@@ -115,5 +121,5 @@ public class Client {
 
         ClientGui gui = new ClientGui();
 
-    }
+    }*/
 }
